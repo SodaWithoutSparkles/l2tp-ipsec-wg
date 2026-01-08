@@ -1,0 +1,15 @@
+[Interface]
+# WireGuard server private key (generate with: wg genkey)
+PrivateKey = YOUR_SERVER_PRIVATE_KEY
+Address = 10.13.13.1/24
+ListenPort = 51820
+
+# Post-up commands to set up routing through L2TP/IPsec
+PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+# Client peer configuration example
+# [Peer]
+# # Client public key (client generates with: wg genkey | tee privatekey | wg pubkey)
+# PublicKey = CLIENT_PUBLIC_KEY
+# AllowedIPs = 10.13.13.2/32

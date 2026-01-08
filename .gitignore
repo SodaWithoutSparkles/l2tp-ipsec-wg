@@ -1,0 +1,22 @@
+# Ignore actual secrets
+secrets/*.txt
+
+# Ignore WireGuard configuration (contains private keys)
+config/wg0.conf
+
+# Docker volumes
+volumes/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
