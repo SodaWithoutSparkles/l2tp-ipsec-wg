@@ -49,11 +49,11 @@ fi
 echo "✓ All required files found!"
 echo ""
 echo "Building Docker images..."
-docker-compose build
+docker compose build
 
 echo ""
 echo "Starting services..."
-docker-compose up -d
+docker compose up -d
 
 echo ""
 echo "Waiting for services to start..."
@@ -63,7 +63,7 @@ echo ""
 echo "==================================="
 echo "Service Status:"
 echo "==================================="
-docker-compose ps
+docker compose ps
 
 echo ""
 echo "==================================="
@@ -76,7 +76,7 @@ echo "WireGuard server is listening on port 51820/udp"
 echo "Clients connecting to WireGuard will have their traffic routed through the L2TP/IPsec VPN."
 echo ""
 echo "To view logs:"
-echo "  docker-compose logs -f"
+echo "  docker compose logs -f"
 echo ""
 echo "To stop:"
-echo "  docker-compose down"
+echo "  docker compose down"

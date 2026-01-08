@@ -147,8 +147,8 @@ You can use the automated setup script:
 Or manually:
 
 ```bash
-docker-compose build
-docker-compose up -d
+docker compose build
+docker compose up -d
 ```
 
 ### Step 6: Verify the Setup
@@ -156,20 +156,20 @@ docker-compose up -d
 Check that both containers are running:
 
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 View logs:
 
 ```bash
 # View all logs
-docker-compose logs -f
+docker compose logs -f
 
 # View only L2TP/IPsec logs
-docker-compose logs -f l2tp-ipsec
+docker compose logs -f l2tp-ipsec
 
 # View only WireGuard logs
-docker-compose logs -f wireguard
+docker compose logs -f wireguard
 ```
 
 Check L2TP/IPsec connection:
@@ -213,28 +213,28 @@ Import this configuration into your WireGuard client application.
 
 ### Start the VPN chain
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Stop the VPN chain
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ### Restart the VPN chain
 ```bash
-docker-compose restart
+docker compose restart
 ```
 
 ### View logs in real-time
 ```bash
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ### Rebuild images after configuration changes
 ```bash
-docker-compose build --no-cache
-docker-compose up -d
+docker compose build --no-cache
+docker compose up -d
 ```
 
 ### Check connection status
@@ -253,7 +253,7 @@ docker exec wireguard-entry wg show
 
 ```
 l2tp-ipsec-wg/
-├── docker-compose.yml          # Main orchestration file
+├── docker compose.yml          # Main orchestration file
 ├── .gitignore                  # Prevents committing secrets
 ├── README.md                   # This file
 │
@@ -362,7 +362,7 @@ sudo chmod 600 /dev/ppp
    ```
 2. Check IPsec logs:
    ```bash
-   docker-compose logs l2tp-ipsec
+   docker compose logs l2tp-ipsec
    ```
 3. Test connectivity to VPN server:
    ```bash
@@ -414,14 +414,32 @@ Enable verbose logging:
 For L2TP/IPsec:
 ```bash
 # Edit strongswan/ipsec.conf and increase charondebug levels
-# Rebuild: docker-compose build l2tp-ipsec
+# Rebuild: docker compose build l2tp-ipsec
 ```
 
 For WireGuard:
 ```bash
 # WireGuard is already verbose in the entrypoint script
-docker-compose logs -f wireguard
+docker compose logs -f wireguard
 ```
+
+### IPsec Compatibility Issues
+
+**Issue**: IPsec connection fails with "no proposal chosen"
+
+**Solution**: The default configuration uses modern, secure algorithms (AES-256-SHA256, modp2048). If your VPN provider requires legacy algorithms, edit `strongswan/ipsec.conf`:
+
+```bash
+# Uncomment the legacy algorithm lines in the conn %default section:
+# ike=aes256-sha1-modp1024,aes128-sha1-modp1024,3des-sha1-modp1024!
+# esp=aes256-sha1,aes128-sha1,3des-sha1!
+
+# Then rebuild:
+docker compose build l2tp-ipsec
+docker compose up -d
+```
+
+**Note**: Legacy algorithms (3DES, SHA1, modp1024) are less secure. Only use them if required by your VPN provider.
 
 ## Performance Tuning
 
@@ -443,7 +461,7 @@ mru 1280
 
 ### Resource Limits
 
-Add resource limits in `docker-compose.yml`:
+Add resource limits in `docker compose.yml`:
 ```yaml
 services:
   wireguard:
@@ -458,7 +476,7 @@ services:
 
 ### Multiple L2TP/IPsec Servers
 
-To support multiple exit servers, create separate secret sets and modify `docker-compose.yml` to run multiple L2TP/IPsec containers.
+To support multiple exit servers, create separate secret sets and modify `docker compose.yml` to run multiple L2TP/IPsec containers.
 
 ### Custom Routing
 

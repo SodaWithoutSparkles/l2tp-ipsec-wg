@@ -39,10 +39,11 @@ fi
 # Configure ipsec.conf with actual server IP
 sed -i "s/VPN_SERVER_IP/$VPN_SERVER_IP/g" /etc/ipsec.conf
 
-# Generate ipsec.secrets from template
-sed -e "s/VPN_SERVER_IP/$VPN_SERVER_IP/g" \
-    -e "s/VPN_IPSEC_PSK/$VPN_IPSEC_PSK/g" \
-    /etc/ipsec.secrets.template > /etc/ipsec.secrets
+# Generate ipsec.secrets from template (using printf to handle special characters)
+{
+    echo "# IPsec secrets configuration"
+    printf "%s %s : PSK \"%s\"\n" "%any" "$VPN_SERVER_IP" "$VPN_IPSEC_PSK"
+} > /etc/ipsec.secrets
 chmod 600 /etc/ipsec.secrets
 
 # Configure xl2tpd.conf with actual server IP
