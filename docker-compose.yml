@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # L2TP/IPsec exit node (StrongSwan client)
   l2tp-ipsec:

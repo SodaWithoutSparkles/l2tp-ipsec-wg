@@ -3,8 +3,11 @@ secrets/*.txt
 
 # Ignore WireGuard configuration (contains private keys)
 config/wg0.conf
+config/*_private.key
+config/*_public.key
 
-# Docker volumes
+# Docker files
+docker-compose.override.yml
 volumes/
 
 # Logs
