@@ -1,0 +1,64 @@
+services:
+  # L2TP/IPsec exit node (StrongSwan client)
+  l2tp-ipsec:
+    build:
+      context: ./strongswan
+      dockerfile: Dockerfile
+    container_name: l2tp-ipsec-exit
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    devices:
+      - /dev/ppp:/dev/ppp
+    secrets:
+      - vpn_server_ip
+      - vpn_ipsec_psk
+      - vpn_username
+      - vpn_password
+    networks:
+      - vpn-network
+    restart: unless-stopped
+    privileged: true
+
+  # WireGuard entry node
+  wireguard:
+    build:
+      context: ./wireguard
+      dockerfile: Dockerfile
+    container_name: wireguard-entry
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./config/wg0.conf:/etc/wireguard/wg0.conf:ro
+      - /lib/modules:/lib/modules:ro
+    ports:
+      - "51820:51820/udp"
+    networks:
+      - vpn-network
+    depends_on:
+      - l2tp-ipsec
+    restart: unless-stopped
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+
+networks:
+  vpn-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+secrets:
+  vpn_server_ip:
+    file: ./secrets/vpn_server_ip.txt
+  vpn_ipsec_psk:
+    file: ./secrets/vpn_ipsec_psk.txt
+  vpn_username:
+    file: ./secrets/vpn_username.txt
+  vpn_password:
+    file: ./secrets/vpn_password.txt
